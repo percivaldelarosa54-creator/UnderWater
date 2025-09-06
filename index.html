@@ -1,0 +1,378 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Website</title>
+  <style>
+    :root{
+      --deep:#001b3a;
+      --mid:#004b66;
+      --light:#30cfd0;
+      --accent:#7be7d9;
+      --glass: rgba(255,255,255,0.06);
+      --card: rgba(255,255,255,0.04);
+      --soft:#c6fff6;
+      font-family: Inter, system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body,#app{height:100%;margin:0}
+    body{
+      background: radial-gradient(circle at 50% 10%, rgba(48,207,208,0.12) 0%, transparent 20%),
+                  linear-gradient(180deg,var(--mid) 0%, var(--deep) 70%);
+      color:var(--soft);
+      -webkit-font-smoothing:antialiased;
+      display:flex;align-items:center;justify-content:center;padding:32px;
+      overflow:auto;
+    }/* subtle moving bubbles */
+.bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.bubbles span{position:absolute;bottom:-10%;background:rgba(255,255,255,0.04);border-radius:50%;opacity:0.6;animation:rise linear infinite;}
+.bubbles span.s1{left:10%;width:28px;height:28px;animation-duration:18s;animation-delay:0s}
+.bubbles span.s2{left:25%;width:18px;height:18px;animation-duration:14s;animation-delay:2s}
+.bubbles span.s3{left:40%;width:36px;height:36px;animation-duration:22s;animation-delay:4s}
+.bubbles span.s4{left:60%;width:22px;height:22px;animation-duration:16s;animation-delay:1s}
+.bubbles span.s5{left:80%;width:30px;height:30px;animation-duration:20s;animation-delay:3s}
+@keyframes rise{0%{transform:translateY(0) scale(.9);opacity:0}10%{opacity:0.6}100%{transform:translateY(-140vh) scale(1.1);opacity:0}}
+
+.container{position:relative;z-index:1;max-width:980px;width:100%;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+
+/* left big panel */
+.panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:20px;padding:28px;box-shadow:0 10px 30px rgba(2,8,23,0.6);backdrop-filter: blur(6px);}
+.brand{display:flex;gap:14px;align-items:center}
+.logo{width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--light));display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--deep);font-size:20px}
+h1{margin:6px 0 4px;font-size:20px}
+p.lead{margin:0;color:rgba(198,255,246,0.9)}
+
+/* right column cards */
+.card{background:var(--card);border-radius:12px;padding:18px}
+
+form{display:grid;gap:12px;margin-top:12px}
+label{font-size:13px;color:rgba(198,255,246,0.9)}
+input[type="text"],input[type="email"],input[type="password"],select,textarea{
+  width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--soft);outline:none;font-size:14px
+}
+.row{display:flex;gap:10px}
+button{padding:10px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--light),var(--accent));color:var(--deep);font-weight:600;cursor:pointer}
+button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--soft)}
+
+/* views */
+.view{display:none}
+.view.active{display:block}
+
+/* file list */
+.file-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.file-item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02)}
+.meta{display:flex;gap:12px;align-items:center}
+.badge{font-size:12px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03)}
+
+footer{margin-top:18px;color:rgba(198,255,246,0.6);font-size:13px}
+
+/* seagrass at bottom */
+.seagrass{position:fixed;left:0;right:0;bottom:0;height:140px;z-index:0;pointer-events:none}
+.seagrass::before,.seagrass::after{content:'';position:absolute;bottom:0;width:100%;height:100px;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.2));}
+.reeds{position:absolute;bottom:0;left:10%;height:120px;width:80%;display:flex;gap:12px;align-items:flex-end}
+.reed{width:8px;height:80px;border-radius:8px;background:linear-gradient(180deg,#0a8a6b,#024e3b);transform-origin:bottom;animation:sway 6s ease-in-out infinite}
+.reed.r2{height:110px;animation-duration:7s}
+.reed.r3{height:95px;animation-duration:5.4s}
+.reed.r4{height:70px;animation-duration:6.6s}
+@keyframes sway{0%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}100%{transform:rotate(-6deg)}}
+
+/* responsive */
+@media (max-width:900px){
+  .container{grid-template-columns:1fr; padding:12px}
+  .brand h1{font-size:18px}
+}
+
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="container">
+      <div class="panel">
+        <div class="brand">
+          <div class="logo">🌊</div>
+          <div>
+            <h1>Welcome!</h1>
+            <p class="lead">Signup, Login and a lightweight browser-file-system — all client-side.</p>
+          </div>
+        </div><!-- Signup View -->
+    <div id="view-signup" class="view active">
+      <h2>Create account</h2>
+      <form id="form-signup">
+        <div>
+          <label>Full name</label>
+          <input required autocomplete="name" id="su-name" type="text" placeholder="e.g. Juan Dela Cruz">
+        </div>
+        <div>
+          <label>Email</label>
+          <input required autocomplete="email" id="su-email" type="email" placeholder="name@example.com">
+        </div>
+        <div class="row">
+          <div style="flex:1">
+            <label>Username</label>
+            <input required id="su-username" type="text" placeholder="username">
+          </div>
+          <div style="flex:1">
+            <label>Display color (accent)</label>
+            <input id="su-color" type="text" placeholder="#0000FF">
+          </div>
+        </div>
+        <div>
+          <label>Password</label>
+          <input required id="su-password" type="password" placeholder="password">
+        </div>
+        <div class="row">
+          <button type="submit">Sign up</button>
+          <button type="button" class="ghost" id="to-login">Already have an account?</button>
+        </div>
+        <div id="signup-msg" style="color:salmon;font-size:13px"></div>
+      </form>
+    </div>
+
+    <!-- Login View -->
+    <div id="view-login" class="view">
+      <h2>Log in</h2>
+      <form id="form-login">
+        <div>
+          <label>Username or Email</label>
+          <input required id="li-user" type="text" placeholder="username or email">
+        </div>
+        <div>
+          <label>Password</label>
+          <input required id="li-password" type="password">
+        </div>
+        <div class="row">
+          <button type="submit">Login</button>
+          <button type="button" class="ghost" id="to-signup">Create account</button>
+        </div>
+        <div id="login-msg" style="color:salmon;font-size:13px"></div>
+      </form>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="view-dash" class="view">
+      <h2>Welcome back, <span id="dash-name">Friend</span> 👋</h2>
+      <p style="margin-top:6px">This is your dashboard. Use the file manager to upload and manage files stored locally in your browser.</p>
+      <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
+        <button id="open-files">Open File Manager</button>
+        <button class="ghost" id="btn-logout">Logout</button>
+      </div>
+      <div id="dash-stats" style="margin-top:14px" class="card">
+        <strong>Account</strong>
+        <div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap">
+          <div class="badge" id="stat-username">—</div>
+          <div class="badge" id="stat-email">—</div>
+          <div class="badge" id="stat-files">Files: 0</div>
+          <div class="badge" id="stat-space">Space: 0 KB</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- File Manager -->
+    <div id="view-files" class="view">
+      <h2>File Manager</h2>
+      <div class="card">
+        <div style="display:flex;gap:12px;align-items:center">
+          <input id="file-input" type="file" multiple>
+          <button id="btn-upload">Upload</button>
+          <button class="ghost" id="btn-back">Back to Dashboard</button>
+        </div>
+        <div class="file-list" id="file-list"></div>
+        <footer>Files are stored locally in your browser's storage (localStorage). They are private to this browser on this device.</footer>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- right column: tips / quick actions -->
+  <div>
+    <div class="card">
+      <strong>Quick actions</strong>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <button id="qa-open-signup" class="ghost">View Signup</button>
+        <button id="qa-open-login" class="ghost">View Login</button>
+        <button id="qa-simulate" class="ghost">View Sample Files</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <strong>How it works</strong>
+      <p style="margin-top:8px;font-size:13px;color:rgba(198,255,246,0.8)">This demo keeps everything client-side — accounts and files stored in your browser using localStorage. No server, no external tracking.</p>
+    </div>
+
+  </div>
+</div>
+
+  </div>  <div class="bubbles" aria-hidden="true">
+    <span class="s1"></span>
+    <span class="s2"></span>
+    <span class="s3"></span>
+    <span class="s4"></span>
+    <span class="s5"></span>
+  </div>
+  <div class="seagrass" aria-hidden="true"><div class="reeds"><div class="reed r1"></div><div class="reed r2"></div><div class="reed r3"></div><div class="reed r4"></div><div class="reed r1"></div></div></div>  <script>
+    // small helper: async sha-256 (returns hex)
+    async function sha256hex(str){
+      const enc = new TextEncoder();
+      const data = enc.encode(str);
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      const h = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+      return h;
+    }
+
+    // storage helpers
+    function saveUsers(obj){ localStorage.setItem('uw_users', JSON.stringify(obj)); }
+    function loadUsers(){ try{return JSON.parse(localStorage.getItem('uw_users')||'{}')}catch(e){return{}} }
+    function currentUser(){ return localStorage.getItem('uw_current') }
+    function setCurrentUser(u){ if(u) localStorage.setItem('uw_current', u); else localStorage.removeItem('uw_current'); }
+
+    // files per user
+    function loadFiles(username){ try{return JSON.parse(localStorage.getItem('uw_files_'+username)||'[]')}catch(e){return[]} }
+    function saveFiles(username,arr){ localStorage.setItem('uw_files_'+username, JSON.stringify(arr)); }
+
+    // view management
+    function showView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); const el = document.getElementById(id); if(el) el.classList.add('active'); }
+
+    // initialize
+    (function init(){
+      // default show signup as requested
+      showView('view-signup');
+
+      // button bindings
+      document.getElementById('to-login').addEventListener('click',()=>{ showView('view-login'); });
+      document.getElementById('to-signup').addEventListener('click',()=>{ showView('view-signup'); });
+      document.getElementById('qa-open-signup').addEventListener('click',()=>showView('view-signup'));
+      document.getElementById('qa-open-login').addEventListener('click',()=>showView('view-login'));
+
+      document.getElementById('form-signup').addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const name = document.getElementById('su-name').value.trim();
+        const email = document.getElementById('su-email').value.trim().toLowerCase();
+        const username = document.getElementById('su-username').value.trim().toLowerCase();
+        const password = document.getElementById('su-password').value;
+        const color = document.getElementById('su-color').value.trim() || '#7be7d9';
+        const msg = document.getElementById('signup-msg'); msg.textContent='';
+        if(!name||!email||!username||!password){ msg.textContent='Please fill all fields.';return }
+        const users = loadUsers();
+        if(users[username] || Object.values(users).some(u=>u.email===email)){ msg.textContent='Username or email already taken.';return }
+        const passhash = await sha256hex(password);
+        users[username] = {name,email,username,pass:passhash,color};
+        saveUsers(users);
+        // show login after signup
+        alert('Account created — please login.');
+        // clear signup
+        document.getElementById('form-signup').reset();
+        showView('view-login');
+      });
+
+      document.getElementById('form-login').addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const who = document.getElementById('li-user').value.trim().toLowerCase();
+        const password = document.getElementById('li-password').value;
+        const msg = document.getElementById('login-msg'); msg.textContent='';
+        if(!who||!password){ msg.textContent='Please enter credentials.';return }
+        const users = loadUsers();
+        // find by username or email
+        const user = users[who] || Object.values(users).find(u=>u.email===who);
+        if(!user){ msg.textContent='User not found.';return }
+        const hash = await sha256hex(password);
+        if(hash !== user.pass){ msg.textContent='Incorrect password.';return }
+        setCurrentUser(user.username);
+        document.getElementById('form-login').reset();
+        openDashboard();
+      });
+
+      document.getElementById('btn-logout').addEventListener('click',()=>{ setCurrentUser(null); alert('Logged out'); showView('view-login'); });
+      document.getElementById('open-files').addEventListener('click',()=>{ showView('view-files'); renderFiles(); });
+      document.getElementById('btn-back').addEventListener('click',()=>{ openDashboard(); });
+      document.getElementById('btn-upload').addEventListener('click',uploadSelectedFiles);
+      document.getElementById('qa-simulate').addEventListener('click',simulateFiles);
+
+      // if there is an active session, open dashboard
+      if(currentUser()){ openDashboard(); }
+    })();
+
+    function openDashboard(){
+      const user = currentUser();
+      if(!user){ showView('view-login'); return }
+      const users = loadUsers();
+      const u = users[user];
+      if(!u){ setCurrentUser(null); showView('view-login'); return }
+      document.getElementById('dash-name').textContent = u.name || u.username;
+      document.getElementById('stat-username').textContent = 'Username: '+u.username;
+      document.getElementById('stat-email').textContent = 'Email: '+u.email;
+      const files = loadFiles(u.username);
+      document.getElementById('stat-files').textContent = 'Files: '+files.length;
+      const bytes = files.reduce((s,f)=>s+(f.size||0),0);
+      document.getElementById('stat-space').textContent = 'Space: '+Math.round(bytes/1024)+' KB';
+      showView('view-dash');
+    }
+
+    function renderFiles(){
+      const user = currentUser(); if(!user) return showView('view-login');
+      const list = loadFiles(user);
+      const wrap = document.getElementById('file-list'); wrap.innerHTML='';
+      if(list.length===0){ wrap.innerHTML='<div style="opacity:0.8">No files yet. Upload using the button above.</div>'; return }
+      list.slice().reverse().forEach(file=>{
+        const item = document.createElement('div'); item.className='file-item';
+        const meta = document.createElement('div'); meta.className='meta';
+        const name = document.createElement('div'); name.innerHTML = '<strong>'+escapeHtml(file.name)+'</strong><div style="font-size:12px;color:rgba(198,255,246,0.6)">'+formatBytes(file.size)+' · '+(new Date(file.date)).toLocaleString()+'</div>';
+        meta.appendChild(name);
+        const actions = document.createElement('div'); actions.style.display='flex'; actions.style.gap='8px';
+        const btnView = document.createElement('button'); btnView.className='ghost'; btnView.textContent='View'; btnView.addEventListener('click',()=>{ window.open(file.data,'_blank'); });
+        const btnDL = document.createElement('button'); btnDL.textContent='Download'; btnDL.addEventListener('click',()=>{ downloadDataUrl(file.data, file.name); });
+        const btnDel = document.createElement('button'); btnDel.className='ghost'; btnDel.textContent='Delete'; btnDel.addEventListener('click',()=>{ if(confirm('Delete '+file.name+'?')){ deleteFile(file.id); }});
+        actions.appendChild(btnView); actions.appendChild(btnDL); actions.appendChild(btnDel);
+        item.appendChild(meta); item.appendChild(actions);
+        wrap.appendChild(item);
+      });
+    }
+
+    function uploadSelectedFiles(){
+      const inp = document.getElementById('file-input'); if(!inp.files || inp.files.length===0) return alert('Choose files first');
+      const user = currentUser(); if(!user) return alert('Please login first');
+      const files = Array.from(inp.files);
+      const existing = loadFiles(user);
+      let processed = 0;
+      files.forEach(f=>{
+        const reader = new FileReader();
+        reader.onload = function(e){
+          const data = e.target.result;
+          existing.push({id:crypto.randomUUID(),name:f.name,size:f.size,type:f.type,data, date: Date.now()});
+          processed++;
+          if(processed===files.length){
+            saveFiles(user, existing);
+            inp.value=''; renderFiles(); openDashboard();
+          }
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+
+    function deleteFile(id){ const user = currentUser(); if(!user) return; const arr = loadFiles(user).filter(f=>f.id!==id); saveFiles(user,arr); renderFiles(); openDashboard(); }
+
+    function downloadDataUrl(dataUrl, filename){ const a = document.createElement('a'); a.href = dataUrl; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); }
+
+    function formatBytes(bytes){ if(!bytes) return '0 B'; const thresh = 1024; if(bytes<thresh) return bytes+' B'; const units = ['KB','MB','GB']; let u = -1; do{ bytes = bytes/1024; u++; }while(bytes>=1024 && u<units.length-1); return bytes.toFixed(1)+' '+units[u]; }
+
+    function escapeHtml(s){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+    // simulate a few sample files for quick testing
+    function simulateFiles(){
+      const users = loadUsers(); const keys = Object.keys(users);
+      if(keys.length===0){ alert('No accounts yet. Create one first.'); return }
+      const u = keys[0];
+      setCurrentUser(u);
+      const sample = [
+        {id:crypto.randomUUID(),name:'notes.txt',size:1200,type:'text/plain',data:'data:text/plain;base64,'+btoa('Sample notes for '+u),date:Date.now()},
+        {id:crypto.randomUUID(),name:'image-sample.png',size:240000,type:'image/png',data:'data:image/svg+xml;base64,'+btoa('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300"><rect width="100%" height="100%" fill="#004b66"/><text x="50%" y="50%" fill="#7be7d9" font-size="28" text-anchor="middle" dominant-baseline="middle">Sample Image</text></svg>'),date:Date.now()}
+      ];
+      saveFiles(u, sample);
+      openDashboard();
+      renderFiles();
+      showView('view-files');
+    }
+
+  </script></body>
+</html>
